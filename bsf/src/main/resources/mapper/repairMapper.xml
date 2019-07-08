@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.qdu.dao.RepairDao">
+
+    <resultMap id="myRepair" type="com.qdu.entity.Repair">
+        <result column="createTime" property="createTime"/>
+        <result column="detailInf" property="detailInf"/>
+        <result column="hasRepair" property="hasRepair"/>
+        <result column="repairmanId" property="repairman.id"/>
+        <collection property="type" column="typeId" select="com.qdu.dao.TypeDao.getById"></collection>
+        <collection property="adress" column="adressId" select="com.qdu.dao.AdressDao.getById"></collection>
+        <collection property="user" column="userId" select="com.qdu.dao.UserDao.getById"></collection>
+    </resultMap>
+
+
+    <!--批量删除-->
+    <delete id="deleteRepairs">
+        DELETE FROM REPAIR
+        WHERE id IN
+        <foreach collection="repairIds" separator="," item="repairId" open="(" close=")" >
+            #{repairId}
+        </foreach>
+    </delete>
+
+    <!--添加报修-->
+    <insert id="addRepair">
+        INSERT INTO REPAIR(createTime,adressId,detailInf,userId,hasRepair,typeId,repairmanId)
+        VALUES (
+        #{createTime},#{adress.id},#{detailInf},#{user.id},#{hasRepair},#{type.id},-1
+        )
+    </insert>
+
+    <!--删除报修-->
+    <delete id="deleteRepair">
+        DELETE FROM REPAIR
+        WHERE id=#{id}
+    </delete>
+
+    <!--修改报修-->
+    <update id="updateRepair">
+        UPDATE REPAIR
+        SET adressId=#{adress.id},detailInf=#{detailInf},userId=#{user.id},typeId=#{type.id}
+        where id=#{id}
+    </update>
+
+    <!--修改报修状态-->
+    <update id="updateHasRepairType">
+        UPDATE REPAIR
+        SET hasRepair=#{hasRepair}
+        where id=#{id}
+    </update>
+
+    <!--验证查询-->
+    <select id="query4Validate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM REPAIR
+        <where>
+            <if test="adress!=null">
+                AND adressId=#{adress.id}
+            </if>
+            <if test="user!=null">
+                AND userId=#{user.id}
+            </if>
+            <if test="type!=null">
+                AND typeId=#{type.id}
+            </if>
+            <if test="detailInf!=null">
+                AND detailInf=#{detailInf}
+            </if>
+        </where>
+    </select>
+
+
+
+    <!--分页查询出报修信息-->
+    <select id="pageQueryRepair" resultMap="myRepair">
+        SELECT * FROM REPAIR
+        <where>
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+        order BY createTime desc
+         limit #{start},#{pageSize}
+    </select>
+
+    <!--分页查询出报修信息-->
+    <select id="pageQueryRepair2" resultMap="myRepair">
+        SELECT * FROM REPAIR
+        <where>
+            hasRepair!=2 AND repairmanId=#{userId}
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+        order BY createTime desc
+        limit #{start},#{pageSize}
+    </select>
+
+    <select id="pageQueryCount2" resultType="java.lang.Integer">
+        SELECT count(*) FROM REPAIR
+        <where>
+            hasRepair!=2 AND repairmanId=#{userId}
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="pageQueryCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM REPAIR
+        <where>
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--分页查询出报修信息-->
+    <select id="getById" resultMap="myRepair">
+        SELECT * FROM REPAIR
+        WHERE ID=#{id}
+    </select>
+
+
+
+    <select id="queryRepairByRepaimanId" resultMap="myRepair">
+        SELECT * FROM REPAIR
+        WHERE repairmanid=#{id} and hasRepair!=3
+    </select>
+
+    <!--修改报修-->
+    <update id="updateRepairRepairman">
+        UPDATE REPAIR
+        SET repairmanId= #{repairman.id},hasRepair=#{hasRepair}
+        where id=#{id}
+    </update>
+
+    <!--分页查询出报修信息-->
+    <select id="pageQueryRepair3" resultMap="myRepair">
+        SELECT * FROM REPAIR
+        <where>
+            userId=#{userId}
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+        order BY createTime desc
+        limit #{start},#{pageSize}
+    </select>
+
+    <select id="pageQueryCount3" resultType="java.lang.Integer">
+        SELECT count(*) FROM REPAIR
+        <where>
+            userId=#{userId}
+            <if test="queryText!=null">
+                AND createTime LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

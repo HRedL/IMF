@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.qdu.dao.AdressDao">
+
+
+    <!--批量删除-->
+    <delete id="deleteAdresses">
+        DELETE FROM ADRESS
+        WHERE id IN
+        <foreach collection="adressIds" separator="," item="adressId" open="(" close=")" >
+            #{adressId}
+        </foreach>
+    </delete>
+
+    <!--添加用户-->
+    <insert id="addAdress">
+        INSERT INTO ADRESS(campus,type,locate)
+        VALUES (
+        #{campus},#{type},#{locate}
+        )
+    </insert>
+
+    <!--删除用户-->
+    <delete id="deleteAdress">
+        DELETE FROM ADRESS
+        WHERE id=#{id}
+    </delete>
+
+    <!--修改用户-->
+    <update id="updateAdress">
+        UPDATE ADRESS
+        SET campus=#{campus},type=#{type},locate=#{locate}
+        where id=#{id}
+    </update>
+
+    <!--验证查询-->
+    <select id="query4Validate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM Adress
+        <where>
+            <if test="campus!=null">
+                AND campus=#{campus}
+            </if>
+            <if test="type!=null">
+                AND type=#{type}
+            </if>
+            <if test="locate!=null">
+                AND locate=#{locate}
+            </if>
+        </where>
+    </select>
+
+
+
+    <!--分页查询出地址信息-->
+    <select id="pageQueryAdress" resultType="com.qdu.entity.Adress">
+        SELECT * FROM ADRESS
+        <where>
+            <if test="queryText!=null">
+                OR campus LIKE concat('%',#{queryText},'%')
+            </if>
+            <if test="queryText!=null">
+                OR locate LIKE concat('%',#{queryText},'%')
+            </if>
+            <if test="queryText!=null">
+                OR type LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+         limit #{start},#{pageSize}
+    </select>
+
+
+    <select id="pageQueryCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM ADRESS
+        <where>
+            <if test="queryText!=null">
+                OR campus LIKE concat('%',#{queryText},'%')
+            </if>
+            <if test="queryText!=null">
+                OR locate LIKE concat('%',#{queryText},'%')
+            </if>
+            <if test="queryText!=null">
+                OR type LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getById" resultType="com.qdu.entity.Adress">
+        SELECT * FROM ADRESS
+        WHERE ID=#{id}
+    </select>
+
+    <!--分页查询出地址信息-->
+    <select id="getAdressByCondition" resultType="com.qdu.entity.Adress">
+        SELECT * FROM ADRESS
+        <where>
+            <if test="campus!=null">
+                AND CAMPUS=#{campus}
+            </if>
+            <if test="type!=null">
+                AND TYPE=#{type}
+            </if>
+            <if test="locate!=null">
+                AND LOCATE=#{locate}
+            </if>
+        </where>
+    </select>
+
+</mapper>

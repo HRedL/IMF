@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.qdu.dao.TypeDao">
+
+
+    <!--批量删除-->
+    <delete id="deleteTypes">
+        DELETE FROM TYPE
+        WHERE ID IN
+        <foreach collection="typeIds" separator="," item="typeId" open="(" close=")" >
+            #{typeId}
+        </foreach>
+    </delete>
+
+    <!--添加用户-->
+    <insert id="addType">
+        INSERT INTO TYPE(repairType)
+        VALUES (
+        #{repairType}
+        )
+    </insert>
+
+    <!--删除用户-->
+    <delete id="deleteType">
+        DELETE FROM TYPE
+        WHERE id=#{id}
+    </delete>
+
+    <!--修改用户-->
+    <update id="updateType">
+        UPDATE TYPE
+        SET repairType=#{repairType}
+        where id=#{id}
+    </update>
+
+    <!--验证查询-->
+    <select id="query4Validate" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM TYPE
+        <where>
+            <if test="repairType!=null">
+                AND repairType=#{repairType}
+            </if>
+        </where>
+    </select>
+
+
+
+    <!--分页查询出用户信息-->
+    <select id="pageQueryType" resultType="com.qdu.entity.Type">
+        SELECT * FROM TYPE
+        <where>
+            <if test="queryText!=null">
+                AND repairType LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+         limit #{start},#{pageSize}
+    </select>
+
+
+    <select id="pageQueryCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM TYPE
+        <where>
+            <if test="queryText!=null">
+                AND repairType LIKE concat('%',#{queryText},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getById" resultType="com.qdu.entity.Type">
+        SELECT * FROM TYPE
+        WHERE ID=#{id}
+    </select>
+
+    <select id="getAllType" resultType="com.qdu.entity.Type">
+        SELECT * FROM TYPE
+    </select>
+
+</mapper>
