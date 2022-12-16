@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.0.0.RELEASE</version>
+            <version>5.2.20.RELEASE</version>
         </dependency>
 
         <!--spring的事务控制（spring jdbc）-->
